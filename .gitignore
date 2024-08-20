@@ -3,4 +3,5 @@
 .RData
 .Ruserdata
 data/*
+!data/README.md
 output/*
