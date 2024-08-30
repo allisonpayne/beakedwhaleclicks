@@ -1,0 +1,123 @@
+---
+title: "Beaked whale click detection"
+format: html
+editor: visual
+---
+
+## Looking for clicks
+
+```{r}
+#| message: false
+#| warning: false
+
+library(tuneR)
+library(tidyverse)
+library(signal)
+library(oce)
+```
+
+I downloaded a 10 minute recording taken by the MARS hydrophone on June 13, 2018 around 2:30 PM. I chose this date because we know beaked whales were in Monterey Bay at this point.
+
+```{r}
+
+#Read in the data  
+data <- readWave("data/MARS_20180613_142912.wav")
+sound <- data@left
+duration <- length(sound) / data@samp.rate
+fs <- data@samp.rate
+
+#Write a function to clip the sound
+clip_by_sec <- function(x, f, start, end) {
+  n_x <- as.numeric(length(x))
+  f <- as.numeric(f)
+  stopifnot(length(start) == 1,
+            length(end) == 1,
+            start >= 0,
+            end >= 0,
+            start <= length(x) * f,
+            end <= length(x) * f)
+  start_idx <- 1 + start * f
+  end_idx <- 1 + end * f
+  x[start_idx:end_idx]
+}
+```
+
+I have a .mat file from Brent with tons of clicks. I wanted to cross reference the clicks with the MARS hydrophone data on a day that we know beaked whales were around. Next we clipped the first half a second of the .wav file and overlay the click locations on top.
+
+```{r}
+
+#Get the first half a second
+sound2 <- clip_by_sec(sound, fs, 0, .5)
+fs2 <- fs 
+
+#Create spectrogram
+spec <- specgram(x = sound2, 
+                 n = 1024, 
+                 Fs = fs2, 
+                 window = 256, 
+                 overlap = 128)
+#discard phase information
+p <- abs(spec$S)
+#normalize
+p <- p / max(p)
+#config time axis
+t <- spec$t
+
+# zoom in on 20 - 120 kHz
+flim <- c(20e3, 120e3)
+plim <- range(p[between(spec$f, flim[1], flim[2]), ])
+imagep(x = t, 
+       y = spec$f, 
+       z = t(p), 
+       col = oce.colorsViridis, 
+       ylab = "Frequency", 
+       xlab = "Time", 
+       #xlim = c(80, 90),
+       ylim = flim,
+       zlim = plim,
+       drawPalette = TRUE, 
+       decimate = FALSE)
+#Manually show where the clicks are (from Brent's .mat file)
+clicks <- c(0.0341, 0.0776, 0.0901, 0.1446, 0.1889, 0.1942, 0.1987, 0.2514)
+abline(v = clicks, col = "red")
+```
+
+The clicks appear to be correct. Now, we try to calculate some of the features of the clicks that we could use to identify the species, starting with peak and center frequency.
+
+```{r}
+#read in the .mat file 
+clicks_mat <- R.matlab::readMat("data/training/yearly/2018/clicks/MARS_20180613_142912.wav_clicks.mat")
+```
+
+```{r}
+
+# Signal frequency power 
+
+# First: high pass filter above 10^3.5 Hz
+nyquist <- fs / 2
+W <- c(10^4, 10^5) / nyquist
+bf <- butter(4, W, type = "pass")
+sound_high <- filtfilt(bf, sound)
+
+#pick a click to try to describe the features
+myclick_t <- mean(c(clicks_mat$start[100], clicks_mat$stop[100]))
+
+window_size_s <- 0.1
+window_size_i <- window_size_s * fs
+myclick_win <- as.integer(myclick_t * fs + c(-1, 1) * window_size_i / 2)
+myclick_signal <- sound_high[myclick_win[1]:myclick_win[2]]
+myclick_fft <- fft(myclick_signal)
+n <- length(myclick_signal)
+f <- (0:(n - 1)) * (fs / n)
+power = abs(myclick_fft)^2 / n
+in_range <- f >= 10^4 & f <= 10^5
+plot(f[in_range], power[in_range], type = "l")
+
+#But these seem wrong
+peak_freq <- f[which.max(power)]
+center_freq <- weighted.mean(f, power)
+peak_freq 
+center_freq
+```
+
+The the peak and center frequency we calculated doesn't seem to be correct. Back to this [tutorial](https://www.mathworks.com/help/matlab/math/basic-spectral-analysis.html) to try again?
