@@ -4,9 +4,11 @@ format: html
 editor: visual
 ---
 
+
 ### Classification
 
 ------------------------------------------------------------------------
+
 
 ```{r}
 #| message: false
@@ -20,7 +22,9 @@ library(cluster)
 library(fclust)
 ```
 
+
 Attempting to translate Sam's Julia code into R.
+
 
 ```{r}
 #read in a feather file
@@ -39,9 +43,8 @@ click_sub <- clicks[click_idx, ]
 #normalize everything along 0-1
 click_norm_sub <- (click_sub - min(click_sub)) / (max(click_sub) - min(click_sub))
 
-#using fuzzy c means to classify the clicks into n clusters. Sam used 200 iterations and 15 clusters, fuzziness value of 2 (default in fcm). 
+#using fuzzy c means to classify the clicks into n clusters. Sam used 200 iterations and 15 clusters, fuzziness value of 2 (default in fcm)
 res.fcm <- fcm(click_norm_sub, centers = 15, iter.max = 200)
-#Takes ~5 minutes to run. (When finished, it will print 'timing stopped at:' with 3 numbers, which indicate the user, system, and elapsed time.)
 
 #looking at a data frame which says how much each click belongs to each cluster (because in fuzzy c means, you have partial membership to all clusters)
 as.data.frame(res.fcm$u)
@@ -56,7 +59,9 @@ plotcluster(res.fcm, cp = 1, trans = TRUE)
 res.fcm2 <- ppclust2(res.fcm, "kmeans")
 
 #visualize the clusters. geom = point takes away the labels
-factoextra::fviz_cluster(res.fcm2, data = click_norm_sub, 
+factoextra::fviz_cluster(res.fcm2, data = clicks, 
   ellipse.type = "convex",
+  palette = "jco",
   geom = "point")
 ```
+
