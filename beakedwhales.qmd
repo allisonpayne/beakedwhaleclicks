@@ -44,7 +44,7 @@ res.fcm <- fcm(click_norm_sub, centers = 15, iter.max = 200)
 #Takes ~5 minutes to run. (When finished, it will print 'timing stopped at:' with 3 numbers, which indicate the user, system, and elapsed time.)
 
 #looking at a data frame which says how much each click belongs to each cluster (because in fuzzy c means, you have partial membership to all clusters)
-as.data.frame(res.fcm$u)
+head(as.data.frame(res.fcm$u))
 
 #summary statistics for the results
 summary(res.fcm)
