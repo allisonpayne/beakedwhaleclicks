@@ -41,7 +41,7 @@ click_norm_sub <- (click_sub - min(click_sub)) / (max(click_sub) - min(click_sub
 
 #using fuzzy c means to classify the clicks into n clusters. Sam used 200 iterations and 15 clusters, fuzziness value of 2 (default in fcm). 
 res.fcm <- fcm(click_norm_sub, centers = 15, iter.max = 200)
-#Takes ~5 minutes to run. (When finished, it will print 'timing stopped at:' with 3 numbers, which indicate the user, system, and elapsed time.)
+#Takes ~10 minutes to run. (When finished, it will print 'timing stopped at:' with 3 numbers, which indicate the user, system, and elapsed time.)
 
 #looking at a data frame which says how much each click belongs to each cluster (because in fuzzy c means, you have partial membership to all clusters)
 head(as.data.frame(res.fcm$u))
