@@ -47,7 +47,7 @@ res.fcm <- fcm(click_norm_sub, centers = 15, iter.max = 200)
 head(as.data.frame(res.fcm$u))
 
 #summary statistics for the results
-summary(res.fcm)
+#summary(res.fcm)
 
 #pairs plot of what clusters look like across features
 plotcluster(res.fcm, cp = 1, trans = TRUE)
@@ -58,5 +58,6 @@ res.fcm2 <- ppclust2(res.fcm, "kmeans")
 #visualize the clusters. geom = point takes away the labels
 factoextra::fviz_cluster(res.fcm2, data = click_norm_sub, 
   ellipse.type = "convex",
-  geom = "point")
+  geom = "point", 
+  ggtheme = theme_classic())
 ```

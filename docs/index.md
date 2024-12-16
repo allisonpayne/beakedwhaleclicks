@@ -1,1 +1,1 @@
-Classifcation figures [here](beakedwhales.html).
+Classification figures [here](beakedwhales.html).
