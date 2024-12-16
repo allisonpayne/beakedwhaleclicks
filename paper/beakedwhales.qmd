@@ -24,7 +24,7 @@ Attempting to translate Sam's Julia code into R.
 
 ```{r}
 #read in a feather file
-clicks <- arrow::read_feather("data/features_20190529.feather") 
+clicks <- arrow::read_feather(here::here("data/features_20190529.feather"))
 #every feather file holds a day
 
 #transforming duration to log(duration) and selecting the four features that Sam used to cluster

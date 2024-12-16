@@ -110,7 +110,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Attempting to translate Sam’s Julia code into R.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#read in a feather file</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>clicks <span class="ot">&lt;-</span> arrow<span class="sc">::</span><span class="fu">read_feather</span>(<span class="st">"data/features_20190529.feather"</span>) </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>clicks <span class="ot">&lt;-</span> arrow<span class="sc">::</span><span class="fu">read_feather</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/features_20190529.feather"</span>))</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#every feather file holds a day</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#transforming duration to log(duration) and selecting the four features that Sam used to cluster</span></span>
@@ -132,27 +132,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co">#looking at a data frame which says how much each click belongs to each cluster (because in fuzzy c means, you have partial membership to all clusters)</span></span>
 <span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">as.data.frame</span>(res.fcm<span class="sc">$</span>u))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>    Cluster 1  Cluster 2  Cluster 3  Cluster 4   Cluster 5  Cluster 6
-1 0.026205267 0.31427391 0.16955221 0.06970276 0.030152561 0.06279893
-2 0.009987621 0.01183825 0.06466693 0.12004423 0.009347784 0.05978229
-3 0.054781710 0.02463029 0.01574490 0.01340006 0.104880867 0.01669108
-4 0.087912724 0.01162042 0.01129618 0.01027283 0.254600636 0.01261262
-5 0.026480065 0.01502539 0.10410816 0.38010196 0.022895953 0.11758222
-6 0.109947892 0.01190079 0.01179408 0.01191082 0.137834488 0.01731378
-    Cluster 7  Cluster 8   Cluster 9  Cluster 10 Cluster 11 Cluster 12
-1 0.015984546 0.05015449 0.035302007 0.052237119 0.04357335 0.04758027
-2 0.009279103 0.00810149 0.122370500 0.528392591 0.01095298 0.02192148
-3 0.018875166 0.42522091 0.006701856 0.009790044 0.12566777 0.03043320
-4 0.018162507 0.08429768 0.004583113 0.006778464 0.34754630 0.03325070
-5 0.022619538 0.01543712 0.037974636 0.069868372 0.02821973 0.10828945
-6 0.042219630 0.03935315 0.005814694 0.009418137 0.06770399 0.03166964
-   Cluster 13  Cluster 14  Cluster 15
-1 0.040406910 0.020668422 0.021407249
-2 0.005739668 0.007867164 0.009707916
-3 0.063936079 0.054200474 0.035045592
-4 0.018086580 0.056543556 0.042435690
-5 0.008852758 0.017258395 0.025286238
-6 0.016396206 0.398334843 0.088387866</code></pre>
+<pre><code>     Cluster 1  Cluster 2    Cluster 3    Cluster 4    Cluster 5    Cluster 6
+1 0.0002241262 0.98869755 0.0008306504 0.0001534825 0.0002130379 0.0007442038
+2 0.0132647391 0.06962699 0.0934294152 0.0175972381 0.0125898625 0.0338306513
+3 0.0003649317 0.98337404 0.0012614723 0.0002448591 0.0003503713 0.0011805775
+4 0.0576808608 0.02801171 0.0690776861 0.0224515954 0.0379609721 0.2703822517
+5 0.4879754262 0.01185657 0.0140463893 0.0094735517 0.0826885427 0.0459300135
+6 0.0912437819 0.01245081 0.0122572907 0.0089058824 0.0836051734 0.0291831323
+    Cluster 7   Cluster 8    Cluster 9   Cluster 10   Cluster 11   Cluster 12
+1 0.001680691 0.001367235 0.0002935948 0.0008275828 0.0003599635 0.0001612581
+2 0.111944008 0.397993416 0.0354507387 0.0534486721 0.0205231966 0.0089943536
+3 0.002466032 0.002032056 0.0004619263 0.0012715232 0.0005858499 0.0002658205
+4 0.061916512 0.038587105 0.0507529718 0.1316287869 0.1255613429 0.0221839932
+5 0.014405177 0.010167755 0.0130819633 0.0218139946 0.0803811111 0.1698859889
+6 0.012915797 0.009879973 0.0112482155 0.0169253950 0.0483132914 0.6223856602
+   Cluster 13   Cluster 14  Cluster 15
+1 0.000135478 5.648209e-05 0.004254669
+2 0.012564042 4.131457e-03 0.114611223
+3 0.000218150 9.344764e-05 0.005828942
+4 0.031501790 5.251081e-03 0.047051338
+5 0.018265478 6.442534e-03 0.013585508
+6 0.015802824 1.205559e-02 0.012827179</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#summary statistics for the results</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#summary(res.fcm)</span></span>
