@@ -119,40 +119,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(logduration, peak_freq, peak_bw, freq50)</span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#subsample every n clicks</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>click_idx <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(clicks), <span class="dv">22200</span>)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>click_sub <span class="ot">&lt;-</span> clicks[click_idx, ]</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">#normalize everything along 0-1</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>click_norm_sub <span class="ot">&lt;-</span> (click_sub <span class="sc">-</span> <span class="fu">min</span>(click_sub)) <span class="sc">/</span> (<span class="fu">max</span>(click_sub) <span class="sc">-</span> <span class="fu">min</span>(click_sub))</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co">#using fuzzy c means to classify the clicks into n clusters. Sam used 200 iterations and 15 clusters, fuzziness value of 2 (default in fcm). </span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>res.fcm <span class="ot">&lt;-</span> <span class="fu">fcm</span>(click_norm_sub, <span class="at">centers =</span> <span class="dv">15</span>, <span class="at">iter.max =</span> <span class="dv">200</span>)</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co">#Takes ~10 minutes to run. (When finished, it will print 'timing stopped at:' with 3 numbers, which indicate the user, system, and elapsed time.)</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co">#looking at a data frame which says how much each click belongs to each cluster (because in fuzzy c means, you have partial membership to all clusters)</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">as.data.frame</span>(res.fcm<span class="sc">$</span>u))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># click_idx &lt;- sample(1:nrow(clicks), 22200)</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># click_sub &lt;- clicks[click_idx, ]</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>click_sub <span class="ot">&lt;-</span> clicks</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co">#normalize everything along 0-1</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>click_norm_sub <span class="ot">&lt;-</span> (click_sub <span class="sc">-</span> <span class="fu">min</span>(click_sub)) <span class="sc">/</span> (<span class="fu">max</span>(click_sub) <span class="sc">-</span> <span class="fu">min</span>(click_sub))</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">#using fuzzy c means to classify the clicks into n clusters. Sam used 200 iterations and 15 clusters, fuzziness value of 2 (default in fcm). </span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>res.fcm <span class="ot">&lt;-</span> <span class="fu">fcm</span>(click_norm_sub, <span class="at">centers =</span> <span class="dv">15</span>, <span class="at">iter.max =</span> <span class="dv">200</span>)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co">#Takes ~10 minutes to run. (When finished, it will print 'timing stopped at:' with 3 numbers, which indicate the user, system, and elapsed time.)</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co">#looking at a data frame which says how much each click belongs to each cluster (because in fuzzy c means, you have partial membership to all clusters)</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">as.data.frame</span>(res.fcm<span class="sc">$</span>u))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>     Cluster 1  Cluster 2    Cluster 3    Cluster 4    Cluster 5    Cluster 6
-1 0.0002241262 0.98869755 0.0008306504 0.0001534825 0.0002130379 0.0007442038
-2 0.0132647391 0.06962699 0.0934294152 0.0175972381 0.0125898625 0.0338306513
-3 0.0003649317 0.98337404 0.0012614723 0.0002448591 0.0003503713 0.0011805775
-4 0.0576808608 0.02801171 0.0690776861 0.0224515954 0.0379609721 0.2703822517
-5 0.4879754262 0.01185657 0.0140463893 0.0094735517 0.0826885427 0.0459300135
-6 0.0912437819 0.01245081 0.0122572907 0.0089058824 0.0836051734 0.0291831323
-    Cluster 7   Cluster 8    Cluster 9   Cluster 10   Cluster 11   Cluster 12
-1 0.001680691 0.001367235 0.0002935948 0.0008275828 0.0003599635 0.0001612581
-2 0.111944008 0.397993416 0.0354507387 0.0534486721 0.0205231966 0.0089943536
-3 0.002466032 0.002032056 0.0004619263 0.0012715232 0.0005858499 0.0002658205
-4 0.061916512 0.038587105 0.0507529718 0.1316287869 0.1255613429 0.0221839932
-5 0.014405177 0.010167755 0.0130819633 0.0218139946 0.0803811111 0.1698859889
-6 0.012915797 0.009879973 0.0112482155 0.0169253950 0.0483132914 0.6223856602
-   Cluster 13   Cluster 14  Cluster 15
-1 0.000135478 5.648209e-05 0.004254669
-2 0.012564042 4.131457e-03 0.114611223
-3 0.000218150 9.344764e-05 0.005828942
-4 0.031501790 5.251081e-03 0.047051338
-5 0.018265478 6.442534e-03 0.013585508
-6 0.015802824 1.205559e-02 0.012827179</code></pre>
+<pre><code>     Cluster 1 Cluster 2    Cluster 3    Cluster 4    Cluster 5    Cluster 6
+1 1.515163e-04 0.9871882 2.506024e-04 2.221170e-04 8.316624e-04 1.081804e-04
+2 4.220837e-04 0.9696941 7.185716e-04 6.479891e-04 2.294015e-03 3.178871e-04
+3 6.157777e-06 0.9995073 1.027431e-05 9.155999e-06 3.368095e-05 4.469910e-06
+4 2.240547e-04 0.9832008 3.821620e-04 3.426403e-04 1.249781e-03 1.669025e-04
+5 5.115446e-04 0.9559094 8.307817e-04 7.357078e-04 2.716305e-03 3.605639e-04
+6 2.155855e-04 0.9815875 3.552758e-04 3.146441e-04 1.178352e-03 1.533349e-04
+     Cluster 7    Cluster 8    Cluster 9   Cluster 10   Cluster 11   Cluster 12
+1 0.0050202134 3.958604e-04 9.236313e-04 1.926229e-03 3.209443e-04 1.551202e-03
+2 0.0104464629 1.137069e-03 2.313657e-03 4.540911e-03 8.561494e-04 3.691607e-03
+3 0.0001852287 1.623838e-05 3.628046e-05 7.415221e-05 1.286672e-05 5.996906e-05
+4 0.0059959926 6.069759e-04 1.260378e-03 2.523087e-03 4.582057e-04 2.003272e-03
+5 0.0174675477 1.304133e-03 3.176335e-03 6.629179e-03 1.096076e-03 5.533385e-03
+6 0.0072660683 5.606742e-04 1.323297e-03 2.767421e-03 4.581710e-04 2.238199e-03
+    Cluster 13   Cluster 14   Cluster 15
+1 6.314045e-05 1.596768e-04 8.867777e-04
+2 1.846737e-04 4.366728e-04 2.298190e-03
+3 2.605796e-06 6.453016e-06 3.520842e-05
+4 9.655870e-05 2.317112e-04 1.257526e-03
+5 2.122179e-04 5.449513e-04 2.971827e-03
+6 8.961325e-05 2.276972e-04 1.264194e-03</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#summary statistics for the results</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#summary(res.fcm)</span></span>

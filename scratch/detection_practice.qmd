@@ -116,3 +116,9 @@ center_freq
 The the peak and center frequency we calculated doesn't seem to be correct. Back to this [tutorial](https://www.mathworks.com/help/matlab/math/basic-spectral-analysis.html) to try again?
 
 Ultimately, Brent is going to do the detection in Julia. So now we will focus on classification.
+
+```{r}
+library(arrow)
+library(PAMpal)
+clicks <- arrow::read_feather(here::here("data/features_20190529.feather"))
+```
